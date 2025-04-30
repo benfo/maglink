@@ -4,15 +4,27 @@ import tailwindcss from "@tailwindcss/vite";
 import flowbiteReact from "flowbite-react/plugin/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+const base = "/maglink/";
+
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/maglink/",
+  base,
   plugins: [
     react(),
     tailwindcss(),
     flowbiteReact(),
     VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      injectRegister: "auto",
+      injectManifest: {
+        rollupFormat: "iife",
+      },
       registerType: "autoUpdate",
+      // devOptions: {
+      //   enabled: true,
+      // },
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
         name: "Magnet Link Generator",
@@ -31,6 +43,15 @@ export default defineConfig({
             type: "image/png",
           },
         ],
+        share_target: {
+          action: `${base}share-target`,
+          method: "POST",
+          enctype: "multipart/form-data",
+          params: {
+            title: "title",
+            text: "text",
+          },
+        },
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
