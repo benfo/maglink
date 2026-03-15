@@ -45,6 +45,7 @@ export default defineConfig({
         share_target: {
           action: '/maglink/',
           method: 'GET',
+          enctype: 'application/x-www-form-urlencoded',
           params: {
             title: 'title',
             text: 'text',
