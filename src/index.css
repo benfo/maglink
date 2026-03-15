@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* ── Static tokens (non-dynamic) ────────────────────────────── */
+@theme {
+  --radius: 0.5rem;
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+/* ── @theme inline bridges runtime CSS vars → Tailwind utilities ─
+   e.g. bg-primary → background-color: var(--color-primary)
+        which resolves to var(--primary) from :root / .dark        */
+@theme inline {
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success:              var(--success);
+  --color-success-foreground:   var(--success-foreground);
+}
+
+/* ── Light mode ─────────────────────────────────────────────── */
+:root {
+  --background:           oklch(0.9816 0.0017 247.839);
+  --foreground:           oklch(0.1649 0.0352 281.8285);
+  --card:                 oklch(1 0 0);
+  --card-foreground:      oklch(0.1649 0.0352 281.8285);
+  --border:               oklch(0.9205 0.0086 225.0878);
+  --input:                oklch(0.9205 0.0086 225.0878);
+  --ring:                 oklch(0.6726 0.2904 341.4084);
+  --primary:              oklch(0.6726 0.2904 341.4084);
+  --primary-foreground:   oklch(1 0 0);
+  --secondary:            oklch(0.9595 0.02 286.0164);
+  --secondary-foreground: oklch(0.1649 0.0352 281.8285);
+  --muted:                oklch(0.9595 0.02 286.0164);
+  --muted-foreground:     oklch(0.4800 0.0352 281.8285);
+  --accent:               oklch(0.8903 0.1739 171.269);
+  --accent-foreground:    oklch(0.1649 0.0352 281.8285);
+  --destructive:          oklch(0.6535 0.2348 34.037);
+  --destructive-foreground: oklch(1 0 0);
+  --success:              oklch(0.6368 0.1788 145.5);
+  --success-foreground:   oklch(1 0 0);
+
+  --glass-bg:      rgba(255, 255, 255, 0.75);
+  --glow-color:    oklch(0.6726 0.2904 341.4084 / 0.15);
+  --glow-sm-color: oklch(0.6726 0.2904 341.4084 / 0.08);
+}
+
+/* ── Dark mode ──────────────────────────────────────────────── */
+.dark {
+  --background:           oklch(0.1649 0.0352 281.8285);
+  --foreground:           oklch(0.9513 0.0074 260.7315);
+  --card:                 oklch(0.2542 0.0611 281.1423);
+  --card-foreground:      oklch(0.9513 0.0074 260.7315);
+  --border:               oklch(0.3279 0.0832 280.789);
+  --input:                oklch(0.3279 0.0832 280.789);
+  --ring:                 oklch(0.6726 0.2904 341.4084);
+  --primary:              oklch(0.6726 0.2904 341.4084);
+  --primary-foreground:   oklch(1 0 0);
+  --secondary:            oklch(0.2542 0.0611 281.1423);
+  --secondary-foreground: oklch(0.9513 0.0074 260.7315);
+  --muted:                oklch(0.2123 0.0522 280.9917);
+  --muted-foreground:     oklch(0.6245 0.05 278.1046);
+  --accent:               oklch(0.8903 0.1739 171.269);
+  --accent-foreground:    oklch(0.1649 0.0352 281.8285);
+  --destructive:          oklch(0.6535 0.2348 34.037);
+  --destructive-foreground: oklch(1 0 0);
+  --success:              oklch(0.6368 0.1788 145.5);
+  --success-foreground:   oklch(1 0 0);
+
+  --glass-bg:      oklch(0.2542 0.0611 281.1423 / 0.85);
+  --glow-color:    oklch(0.6726 0.2904 341.4084 / 0.2);
+  --glow-sm-color: oklch(0.6726 0.2904 341.4084 / 0.1);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overscroll-behavior: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .glow    { box-shadow: 0 0 24px var(--glow-color); }
+  .glow-sm { box-shadow: 0 0 12px var(--glow-sm-color); }
+}
