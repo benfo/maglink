@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form'
 import { DEFAULT_TRACKERS, isValidHash, parseMagnetLink } from '@/lib/magnet'
+import type { ShareTargetData } from '@/hooks/useShareTarget'
 import * as React from 'react'
 
 const schema = z.object({
@@ -27,9 +28,10 @@ type FormValues = z.infer<typeof schema>
 
 interface MagnetFormProps {
   onGenerate: (params: { name: string; hash: string; trackers: string[]; sizeBytes?: number }) => void
+  shareData?: ShareTargetData | null
 }
 
-export function MagnetForm({ onGenerate }: MagnetFormProps) {
+export function MagnetForm({ onGenerate, shareData }: MagnetFormProps) {
   const [showAdvanced, setShowAdvanced] = React.useState(false)
 
   const form = useForm<FormValues>({
@@ -41,6 +43,17 @@ export function MagnetForm({ onGenerate }: MagnetFormProps) {
       trackers: DEFAULT_TRACKERS.join('\n'),
     },
   })
+
+  // Pre-fill form when share target data arrives
+  React.useEffect(() => {
+    if (!shareData) return
+    form.reset({
+      hash: shareData.hash,
+      name: shareData.name,
+      sizeBytes: '',
+      trackers: DEFAULT_TRACKERS.join('\n'),
+    })
+  }, [shareData, form])
 
   // Auto-parse a pasted full magnet link
   const handleHashChange = (val: string) => {

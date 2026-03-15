@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Magnet } from 'lucide-react'
+import { Magnet, Share2 } from 'lucide-react'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { MagnetForm } from '@/components/MagnetForm'
 import { MagnetResult } from '@/components/MagnetResult'
@@ -9,12 +9,14 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { BottomNav, type AppTab } from '@/components/BottomNav'
 import { useToast } from '@/components/ui/toast'
 import { useTheme } from '@/hooks/useTheme'
+import { useShareTarget } from '@/hooks/useShareTarget'
 import { buildMagnetLink } from '@/lib/magnet'
 import { saveEntry, getHistory, deleteEntry, clearHistory, type HistoryEntry } from '@/lib/history'
 
 export default function App() {
   const { toast } = useToast()
   const { theme, toggle } = useTheme()
+  const shareData = useShareTarget()
   const [activeTab, setActiveTab] = React.useState<AppTab>('generate')
   const [history, setHistory] = React.useState<HistoryEntry[]>([])
   const [currentEntry, setCurrentEntry] = React.useState<HistoryEntry | null>(null)
@@ -22,6 +24,14 @@ export default function App() {
   React.useEffect(() => {
     getHistory().then(setHistory)
   }, [])
+
+  // When share target data arrives, switch to generate tab and notify
+  React.useEffect(() => {
+    if (!shareData) return
+    setActiveTab('generate')
+    setCurrentEntry(null)
+    toast(`Hash detected from shared content`, 'info')
+  }, [shareData, toast])
 
   const handleGenerate = async (params: {
     name: string
@@ -76,6 +86,12 @@ export default function App() {
             <Magnet size={16} className="text-primary" />
           </div>
           <span className="font-semibold text-sm tracking-tight">MagLinkGen</span>
+          {shareData && (
+            <span className="flex items-center gap-1 text-xs text-primary font-medium">
+              <Share2 size={12} />
+              Shared
+            </span>
+          )}
           <div className="ml-auto">
             <ThemeToggle theme={theme} onToggle={toggle} />
           </div>
@@ -89,7 +105,7 @@ export default function App() {
       >
         <div className="max-w-lg mx-auto px-4 py-6 flex flex-col gap-5 pb-28">
           <InstallPrompt />
-          <MagnetForm onGenerate={handleGenerate} />
+          <MagnetForm onGenerate={handleGenerate} shareData={shareData} />
           {currentEntry && (
             <MagnetResult
               entry={currentEntry}

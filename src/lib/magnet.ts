@@ -39,6 +39,32 @@ export function parseMagnetLink(magnet: string): Partial<MagnetParams> | null {
   return { hash, name, sizeBytes, trackers }
 }
 
+/** Scans arbitrary text for a magnet link or raw infohash. Returns the hash and an optional name. */
+export function extractFromText(text: string): { hash: string; name: string } | null {
+  const trimmed = text.trim()
+
+  // Full magnet link anywhere in the text
+  const magnetMatch = trimmed.match(/magnet:\?[^\s"'<>]+/i)
+  if (magnetMatch) {
+    const parsed = parseMagnetLink(magnetMatch[0])
+    if (parsed?.hash) return { hash: parsed.hash, name: parsed.name ?? '' }
+  }
+
+  // SHA-256 hex (64 chars)
+  const sha256 = trimmed.match(/\b([0-9a-fA-F]{64})\b/)
+  if (sha256) return { hash: sha256[1], name: '' }
+
+  // SHA-1 hex (40 chars)
+  const sha1 = trimmed.match(/\b([0-9a-fA-F]{40})\b/)
+  if (sha1) return { hash: sha1[1], name: '' }
+
+  // Base32 BTIHv1 (32 uppercase chars from A-Z2-7)
+  const base32 = trimmed.match(/\b([A-Z2-7]{32})\b/)
+  if (base32) return { hash: base32[1], name: '' }
+
+  return null
+}
+
 export function isValidHash(hash: string): boolean {
   const clean = hash.trim()
   // BTIHv1 (SHA-1 hex 40 chars or base32 32 chars) or BTIHv2 (SHA-256 hex 64 chars)
